@@ -1,4 +1,4 @@
 [submodule "driver_pack/log"]
 	path = driver_pack/log
-	url = ../easy_display_log
+	url = https://github.com/Shuyu0423/easy_log.git
 	branch = main
