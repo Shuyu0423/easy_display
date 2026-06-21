@@ -1,0 +1,4 @@
+[submodule "driver_pack/log"]
+	path = driver_pack/log
+	url = ../easy_display_log
+	branch = main
