@@ -10,6 +10,7 @@
 
 #include "user_conf.h"
 
+#include "sc_log.h"
 #include "lcd_ui.h"
 #include "pic.h"
 

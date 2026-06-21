@@ -6,10 +6,7 @@
  */
 
 #include "command.h"
-#include "lcd_ui.h"
 
-extern const unsigned char  gImage_1[];
-extern const unsigned char  gImage_2[];
 /***************************command funciton***********************/
 REGISTER_COMMAND_FUNCTION(version) {
     LOG(INFO,RED,"version:%s",get_sc_log_version());

@@ -685,17 +685,12 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Middle</GroupName>
+          <GroupName>log</GroupName>
           <Files>
             <File>
               <FileName>sc_log.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\driver_pack\log\src\sc_log.c</FilePath>
-            </File>
-            <File>
-              <FileName>lcd_driver.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\driver_pack\lcd\src\lcd_driver.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -727,6 +722,11 @@
         <Group>
           <GroupName>Middle/lcd_middle</GroupName>
           <Files>
+            <File>
+              <FileName>lcd_driver.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\driver_pack\lcd\src\lcd_driver.c</FilePath>
+            </File>
             <File>
               <FileName>epd.c</FileName>
               <FileType>1</FileType>

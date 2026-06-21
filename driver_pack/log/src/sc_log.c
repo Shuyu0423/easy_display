@@ -5,7 +5,9 @@
  *         fifo缓冲区、提供底层注册函数
  */
 
-#include "sc_log.h" 
+#include "sc_log.h"
+#include "c_unit.h"
+#include <stdio.h>
 
 const char* sc_log_version = "01-250918";
 
@@ -388,9 +390,9 @@ static FLASH_MANEGER info_manager,err_manager,warn_manager;
 
 static void component_init(void) {
 	
-    log_head_ctrl.ops.flash_read = mcu_flash_read;
-    log_head_ctrl.ops.flash_write = mcu_flash_wirte;
-    log_head_ctrl.ops.flash_earse = mcu_flash_erase;
+    log_head_ctrl.ops.flash_read = FLASH_READ_FUNC;
+    log_head_ctrl.ops.flash_write = FLASH_WRITE_FUNC;
+    log_head_ctrl.ops.flash_earse = FLASH_ERASE_FUNC;
 	log_head_ctrl.info_log_start_addr = FLASH_START_ADDR + sizeof(CTRL_INFO) + (0 * FLASH_SECTOR_SIZE);
 	log_head_ctrl.err_log_start_addr = FLASH_START_ADDR + sizeof(CTRL_INFO) + (1 * FLASH_SECTOR_SIZE);
 	log_head_ctrl.warn_log_start_addr = FLASH_START_ADDR + sizeof(CTRL_INFO) + (2 * FLASH_SECTOR_SIZE);
@@ -460,7 +462,7 @@ static uint8_t flash_log_write(uint8_t log_type,uint8_t* p_data,uint8_t len) {
     uint8_t ret = LOG_OK;
 
     log_pack.data_len = len;
-    log_pack.timestamp = TickVal();
+    log_pack.timestamp = LOG_TICK_FUNC();
     c_memcpy(log_pack.data,p_data,len);
 
     switch (log_type)

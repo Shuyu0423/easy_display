@@ -1,6 +1,7 @@
 
  
 #include "bsp_uart.h" 
+#include "sc_log.h"
 #include "stdio.h"
 
 extern UART_HANDLER usart_handler;

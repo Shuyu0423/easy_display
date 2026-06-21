@@ -6,7 +6,9 @@
  #define SC_LOG_H__
 
 
-#include "sc_conf.h"
+#include "sc_log_conf.h"
+#include <stdarg.h>
+#include <string.h>
 
 const char* get_sc_log_version(void);
 
@@ -166,9 +168,9 @@ static CTRL_INFO name = {                       \
 
 #define HEAD_INIT(name)                         \
 static LOG_HEAD name = {                        \
-	.ops.flash_read = mcu_flash_read,\
-	.ops.flash_write = mcu_flash_wirte,\
-	.ops.flash_earse = mcu_flash_erase,\
+	.ops.flash_read = FLASH_READ_FUNC,\
+	.ops.flash_write = FLASH_WRITE_FUNC,\
+	.ops.flash_earse = FLASH_ERASE_FUNC,\
     ADDR_LIST                                   \
 };
 

@@ -16,7 +16,6 @@
 #define USER_CONF_H__
 
 /*内部文件*/
-#include "sc_log.h"
 #include "c_unit.h"
 #include "cbtimer.h"
 
