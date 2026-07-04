@@ -6,9 +6,7 @@ LR_IROM1 0x08000000 0x00080000 {
   ER_IROM1 0x08000000 0x00080000 {
     *.o (RESET, +First)
     *(InRoot$$Sections)
-	  command_section$$Base = .;
     *(command_section)  
-	  command_section$$Limit = .;
     .ANY (+RO)
     .ANY (+XO)
   }
