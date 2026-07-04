@@ -1,11 +1,5 @@
-/*
- * @file         : lcd_driver.c
- * @Author       : shuyu
- * @LastEditTime : 2025-08-17 00:05
- * @Description  : lcd_driver的驱动文件
- * @note:        : FIX:   @sy   2025-08-16      不同的屏幕大小不同，如果有的屏幕大于256，那么需要传输两个字节，因此添加声明
- */
 #include "lcd_driver.h"
+#include <stddef.h>
 
 static SPI_DEV spi_dev = {.spi_init = SPI_INIT,
                           .spi_transbyte = SPI_SWAP_BYTE,
@@ -13,10 +7,10 @@ static SPI_DEV spi_dev = {.spi_init = SPI_INIT,
                           .set_dc = SPI_SET_DC};
 
 /**
- * @fuunciton:      spi_write_reg
- * @brief:          写命令函数
- * @param{data}:    写入的命令数据
- * @retval:         NULL
+ * @function:   spi_write_cmd
+ * @breif:      Write one command byte to the SPI display bus.
+ * @param cmd:  Command byte.
+ * @retval:     NULL
  */
 static void spi_write_cmd(uint8_t cmd) {
     spi_dev.set_dc(0);
@@ -27,35 +21,53 @@ static void spi_write_cmd(uint8_t cmd) {
 }
 
 /**
- * @fuunciton:      spi_write_data
- * @brief:          写数据函数
- * @param{data}:    写入的具体的数据
- * @retval:         NULL
+ * @function:   spi_write_data
+ * @breif:      Write one data byte to the SPI display bus.
+ * @param data: Data byte.
+ * @retval:     NULL
  */
 static void spi_write_data(uint8_t data) {
     spi_dev.set_dc(1);
     spi_dev.set_cs(0);
     spi_dev.spi_transbyte(data);
     spi_dev.set_cs(1);
-    spi_dev.set_dc(1);
 }
 
 /**
- * @funciton:       spi_write_double_data
- * @breif:          写入两个字节的数据
- * @param{data}:    256以上
- * @retval:         NULL
+ * @function:   spi_write_data_buf
+ * @breif:      Write a continuous data buffer in one SPI transaction.
+ * @param data: Data buffer pointer.
+ * @param len:  Data length in bytes.
+ * @retval:     NULL
  */
-static void spi_write_double_data(uint16_t data) {
-    spi_write_data(data >> 8);
-    spi_write_data(data);
+static void spi_write_data_buf(const uint8_t *data, uint32_t len) {
+    if ((data == NULL) || (len == 0U)) {
+        return;
+    }
+
+    spi_dev.set_dc(1);
+    spi_dev.set_cs(0);
+    for (uint32_t i = 0; i < len; i++) {
+        spi_dev.spi_transbyte(data[i]);
+    }
+    spi_dev.set_cs(1);
 }
 
-// TODO:目前无法支持多个SPI—LCD设备
+/**
+ * @function:       lcd_fn_register
+ * @breif:          Register SPI operation callbacks for a display device.
+ * @param lcd_dev:  Display SPI operation object.
+ * @retval:         NULL
+ */
 void lcd_fn_register(BASE_SPI *lcd_dev) {
+    if (lcd_dev == NULL) {
+        return;
+    }
+
     lcd_dev->dev = &spi_dev;
     lcd_dev->write_cmd = spi_write_cmd;
     lcd_dev->write_data = spi_write_data;
+    lcd_dev->write_data_buf = spi_write_data_buf;
     lcd_dev->read_busy = SPI_READ_BUSY;
     lcd_dev->set_reset = SPI_SET_RESET;
 }

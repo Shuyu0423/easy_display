@@ -6,6 +6,12 @@
  */
 #include "mcu_spi.h"
 
+/**
+ * @function:   spi_gpio_init
+ * @breif:      Initialize GPIO pins used by software SPI display bus.
+ * @param:      NULL
+ * @retval:     NULL
+ */
 void spi_gpio_init(void) {
     GPIO_InitTypeDef GPIO_InitStructure;
     RCC_AHB1PeriphClockCmd(SPI_SCL_GPIO_CLK | SPI_SDA_GPIO_CLK | SPI_RES_GPIO_CLK | SPI_DC_GPIO_CLK
@@ -17,7 +23,7 @@ void spi_gpio_init(void) {
     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
     GPIO_Init(SPI_SCL_GPIO_PORT, &GPIO_InitStructure);
-    SPI_SDA_Set();
+    SPI_SCL_Set();
 
     GPIO_InitStructure.GPIO_Pin = SPI_SDA_GPIO_PIN;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
@@ -57,6 +63,12 @@ void spi_gpio_init(void) {
     GPIO_Init(SPI_BL_GPIO_PORT, &GPIO_InitStructure);
 }
 
+/**
+ * @function:   spi_set_cs
+ * @breif:      Set SPI chip-select pin level.
+ * @param mode: Pin level, 0 low and non-zero high.
+ * @retval:     NULL
+ */
 void spi_set_cs(uint8_t mode) {
     if (mode) {
         GPIO_SetBits(SPI_CS_GPIO_PORT, SPI_CS_GPIO_PIN);
@@ -65,6 +77,12 @@ void spi_set_cs(uint8_t mode) {
     }
 }
 
+/**
+ * @function:   spi_set_dc
+ * @breif:      Set display data/command pin level.
+ * @param mode: Pin level, 0 command and non-zero data.
+ * @retval:     NULL
+ */
 void spi_set_dc(uint8_t mode) {
     if (mode) {
         GPIO_SetBits(SPI_DC_GPIO_PORT, SPI_DC_GPIO_PIN);
@@ -73,10 +91,22 @@ void spi_set_dc(uint8_t mode) {
     }
 }
 
+/**
+ * @function:   spi_read_busy
+ * @breif:      Read display busy pin level.
+ * @param:      NULL
+ * @retval:     Busy pin level.
+ */
 uint8_t spi_read_busy(void) {
     return GPIO_ReadInputDataBit(SPI_BUSY_GPIO_PORT, SPI_BUSY_GPIO_PIN);
 }
 
+/**
+ * @function:   spi_set_reset
+ * @breif:      Set display reset pin level.
+ * @param mode: Pin level, 0 low and non-zero high.
+ * @retval:     NULL
+ */
 void spi_set_reset(uint8_t mode) {
     if (mode) {
         GPIO_SetBits(SPI_RES_GPIO_PORT, SPI_RES_GPIO_PIN);
@@ -85,6 +115,12 @@ void spi_set_reset(uint8_t mode) {
     }
 }
 
+/**
+ * @function:   spi_set_bl
+ * @breif:      Set display backlight pin level.
+ * @param mode: Pin level, 0 low and non-zero high.
+ * @retval:     NULL
+ */
 void spi_set_bl(uint8_t mode) {
     if (mode) {
         GPIO_SetBits(SPI_BL_GPIO_PORT, SPI_BL_GPIO_PIN);
@@ -93,9 +129,14 @@ void spi_set_bl(uint8_t mode) {
     }
 }
 
+/**
+ * @function:   spi_transbyte
+ * @breif:      Send one byte through software SPI.
+ * @param dat:  Byte to send.
+ * @retval:     Received byte, unused by current display bus.
+ */
 uint8_t spi_transbyte(uint8_t dat) {
     uint8_t i;
-    SPI_CS_Clr();
     for (i = 0; i < 8; i++) {
         SPI_SCL_Clr();
         if (dat & 0x80) {
@@ -106,5 +147,5 @@ uint8_t spi_transbyte(uint8_t dat) {
         SPI_SCL_Set();
         dat <<= 1;
     }
-    SPI_CS_Set();
+    return 0;
 }

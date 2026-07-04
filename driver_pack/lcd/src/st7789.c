@@ -6,6 +6,7 @@
  */
 
 #include "st7789.h"
+#include <stddef.h>
 
 static BASE_SPI st7789;
 
@@ -58,7 +59,7 @@ static void st7789_driver_init(void) {
     /** 点亮背光 */
 
 #if NEED_SPIPORT_BL
-	SPI_SET_BLE(1);
+    SPI_SET_BLE(1);
 #endif
 
     st7789.write_cmd(0x11); //Sleep out
@@ -197,8 +198,6 @@ static void st7789_driver_init(void) {
 static void st7789_init(void) {
     st7789_base_init();
     st7789.dev->spi_init();
-    SPI_SCL_Set();
-
     // 初始化驱动
     st7789_driver_init();
 }
@@ -206,10 +205,31 @@ static void st7789_init(void) {
 /**
  * @funciton：  st7789_set_pixel
  */
+/**
+ * @function:    st7789_set_pixel
+ * @breif:       Draw one RGB565 pixel on ST7789.
+ * @param x:     X coordinate.
+ * @param y:     Y coordinate.
+ * @param color: RGB565 color.
+ * @retval:      NULL
+ */
 static void st7789_set_pixel(uint16_t x, uint16_t y, uint16_t color) {
     st7789_set_window(x, y, x, y);
     st7789.write_data(color >> 8);
     st7789.write_data(color);
+}
+
+/**
+ * @function:          st7789_write_pixels
+ * @breif:             Write continuous RGB565 pixels to the current ST7789 window.
+ * @param pixels:      RGB565 pixel data pointer, high byte first.
+ * @param pixel_count: Pixel count.
+ * @retval:            NULL
+ */
+static void st7789_write_pixels(const uint8_t *pixels, uint32_t pixel_count) {
+    if (st7789.write_data_buf) {
+        st7789.write_data_buf(pixels, pixel_count * 2U);
+    }
 }
 
 /**
@@ -257,5 +277,7 @@ void st7789_driver_init_callback(LCD_DRIVER *lcd_driver) {
     lcd_driver->clear = st7789_clear;
     lcd_driver->sleep = st7789_sleep;
     lcd_driver->set_pixel = st7789_set_pixel;
+    lcd_driver->set_window = st7789_set_window;
+    lcd_driver->write_pixels = st7789_write_pixels;
     lcd_driver->dev_type = DEV_LCD;
 }

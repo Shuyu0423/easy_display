@@ -1,10 +1,3 @@
-/*
- * @Author       : SuperYu 824229900@qq.com
- * @Date         : 2025-07-06 15:51
- * @LastEditors  : Please set LastEditors
- * @LastEditTime : 2025-08-17 21:58
- * @Description  : 
- */
 #include "board.h"
 #include <stdio.h>
 
@@ -24,7 +17,7 @@ int main(void) {
     ui_init();
 
     //ui_show_string(30, 50, "hello world", 16, BLACK);
-    ui_show_picture(0, 0, 150, 150, gImage_2, NULL);
+    ui_show_picture(0, 0, 150, 150, gImage_2, BLACK);
 #if 1
     uint8_t temp_buf[RING_BUFFER_SIZE];
     uint8_t cmp_buf[RING_BUFFER_SIZE];
