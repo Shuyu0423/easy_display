@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F40_41xxx,</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\app;..\..\board;..\..\bsp;..\..\libraries\CMSIS\Include;..\..\libraries\CMSIS\Device\ST\STM32F4xx\Include;..\..\libraries\STM32F4xx_StdPeriph_Driver\inc;..\..\module;..\..\bsp\uart;..\..\..\..\..\driver_pack;..\..\..\..\..\driver_pack\log\src;..\..\..\..\..\driver_pack\log\inc;..\..\..\..\..\driver_pack\RTT;..\..\..\..\..\driver_pack\RTT\Config;C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Include;..\..\..\..\..\driver_pack\tool\src;..\..\..\..\..\driver_pack\tool\inc;..\..\..\..\..\driver_pack\lcd\src;..\..\..\..\..\driver_pack\lcd\inc;..\..\..\..\..\driver_pack\command\src;..\..\..\..\..\driver_pack\command\inc</IncludePath>
+              <IncludePath>..\..\app;..\..\board;..\..\bsp;..\..\libraries\CMSIS\Include;..\..\libraries\CMSIS\Device\ST\STM32F4xx\Include;..\..\libraries\STM32F4xx_StdPeriph_Driver\inc;..\..\module;..\..\bsp\uart;..\..\..\..\..\driver_pack;..\..\..\..\..\driver_pack\log\src;..\..\..\..\..\driver_pack\log\inc;..\..\..\..\..\driver_pack\log\third_party\segger_rtt;..\..\..\..\..\driver_pack\log\backend\rtt\inc;C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Include;..\..\..\..\..\driver_pack\tool\src;..\..\..\..\..\driver_pack\tool\inc;..\..\..\..\..\driver_pack\lcd\src;..\..\..\..\..\driver_pack\lcd\inc;..\..\..\..\..\driver_pack\command\src;..\..\..\..\..\driver_pack\command\inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -665,12 +665,12 @@
             <File>
               <FileName>SEGGER_RTT.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\driver_pack\RTT\SEGGER_RTT.c</FilePath>
+              <FilePath>..\..\..\..\..\driver_pack\log\third_party\segger_rtt\SEGGER_RTT.c</FilePath>
             </File>
             <File>
               <FileName>SEGGER_RTT_printf.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\driver_pack\RTT\SEGGER_RTT_printf.c</FilePath>
+              <FilePath>..\..\..\..\..\driver_pack\log\third_party\segger_rtt\SEGGER_RTT_printf.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -691,6 +691,11 @@
               <FileName>sc_log.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\driver_pack\log\src\sc_log.c</FilePath>
+            </File>
+            <File>
+              <FileName>log_backend_rtt.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\driver_pack\log\backend\rtt\src\log_backend_rtt.c</FilePath>
             </File>
           </Files>
         </Group>
