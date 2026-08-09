@@ -91,12 +91,52 @@ set(STM32F4_DEMO_INCLUDE_DIRS
     ${EASY_DISPLAY_ROOT}/driver_pack/log/third_party/segger_rtt
     ${EASY_DISPLAY_ROOT}/driver_pack/tool/inc
     ${EASY_DISPLAY_ROOT}/tests/target/touch
+    ${EASY_DISPLAY_ROOT}/include
+    ${EASY_DISPLAY_ROOT}/driver_pack/adapter/inc
 )
 
 set(STM32F4_DEMO_DEFINES
     USE_STDPERIPH_DRIVER
     STM32F40_41xxx
 )
+
+if(EASY_DISPLAY_BUILD_STM32F4_PLATFORM)
+    set(STM32F4_PLATFORM_SOURCES ${STM32F4_DEMO_SOURCES})
+    list(REMOVE_ITEM STM32F4_PLATFORM_SOURCES
+        app/main.c
+        ${EASY_DISPLAY_ROOT}/tests/target/touch/cst816_calibration_test.c
+        ${EASY_DISPLAY_ROOT}/tests/target/touch/ili9341_xpt2046_test.c
+    )
+    list(APPEND STM32F4_PLATFORM_SOURCES
+        ${EASY_DISPLAY_ROOT}/driver_pack/adapter/src/ili9341_easy_display.c
+        ${EASY_DISPLAY_ROOT}/driver_pack/adapter/src/xpt2046_easy_pointer.c
+    )
+
+    add_library(easy_display_stm32f4_platform STATIC
+        ${STM32F4_PLATFORM_SOURCES}
+    )
+    add_library(easy_display::stm32f4_platform ALIAS
+        easy_display_stm32f4_platform)
+    target_compile_definitions(easy_display_stm32f4_platform PUBLIC
+        ${STM32F4_DEMO_DEFINES}
+    )
+    target_include_directories(easy_display_stm32f4_platform PUBLIC
+        ${STM32F4_DEMO_INCLUDE_DIRS}
+    )
+    target_compile_options(easy_display_stm32f4_platform PRIVATE
+        -mcpu=cortex-m4
+        -mthumb
+        -mfloat-abi=soft
+        -ffunction-sections
+        -fdata-sections
+        -Wall
+        -Wno-unused-parameter
+        -Wno-missing-braces
+    )
+    target_link_libraries(easy_display_stm32f4_platform PUBLIC
+        easy_display
+    )
+endif()
 
 if(EASY_DISPLAY_BUILD_STM32F4_OBJECTS)
     add_library(easy_display_stm32f4_demo_objects OBJECT

@@ -31,10 +31,12 @@ add_custom_target(log_host_syntax ALL
 )
 
 add_subdirectory(touch)
+add_subdirectory(device)
 
 add_custom_target(host_tests
     DEPENDS
         log_host_syntax
         test_touch_cst816
         test_touch_xpt2046
+        test_easy_display_device
 )
