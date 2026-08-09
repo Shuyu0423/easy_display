@@ -6,3 +6,4 @@ demo/stm32_f4/example_pro/project/MDK(V5)/JLinkLog.txt
 
 *.o
 *.i
+tests/host/**/build/
