@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F40_41xxx,</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\app;..\..\board;..\..\bsp;..\..\libraries\CMSIS\Include;..\..\libraries\CMSIS\Device\ST\STM32F4xx\Include;..\..\libraries\STM32F4xx_StdPeriph_Driver\inc;..\..\module;..\..\bsp\uart;..\..\..\..\..\driver_pack;..\..\..\..\..\driver_pack\log\src;..\..\..\..\..\driver_pack\log\inc;..\..\..\..\..\driver_pack\log\third_party\segger_rtt;..\..\..\..\..\driver_pack\log\backend\rtt\inc;C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Include;..\..\..\..\..\driver_pack\tool\src;..\..\..\..\..\driver_pack\tool\inc;..\..\..\..\..\driver_pack\lcd\src;..\..\..\..\..\driver_pack\lcd\inc;..\..\..\..\..\driver_pack\command\src;..\..\..\..\..\driver_pack\command\inc</IncludePath>
+              <IncludePath>..\..\app;..\..\board;..\..\bsp;..\..\libraries\CMSIS\Include;..\..\libraries\CMSIS\Device\ST\STM32F4xx\Include;..\..\libraries\STM32F4xx_StdPeriph_Driver\inc;..\..\module;..\..\bsp\uart;..\..\..\..\..\driver_pack;..\..\..\..\..\driver_pack\log\src;..\..\..\..\..\driver_pack\log\inc;..\..\..\..\..\driver_pack\log\third_party\segger_rtt;..\..\..\..\..\driver_pack\log\backend\rtt\inc;C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Include;..\..\..\..\..\driver_pack\tool\src;..\..\..\..\..\driver_pack\tool\inc;..\..\..\..\..\driver_pack\lcd\src;..\..\..\..\..\driver_pack\lcd\inc;..\..\..\..\..\driver_pack\command\src;..\..\..\..\..\driver_pack\command\inc;..\..\..\..\..\driver_pack\input\touch\core\inc;..\..\..\..\..\driver_pack\input\touch\controller\cst816\inc;..\..\..\..\..\driver_pack\input\touch\controller\xpt2046\inc;..\..\..\..\..\tests\target\touch</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -431,6 +431,16 @@
               <FileName>mcu_spi.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\board\mcu_spi.c</FilePath>
+            </File>
+            <File>
+              <FileName>mcu_touch_iic.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\board\mcu_touch_iic.c</FilePath>
+            </File>
+            <File>
+              <FileName>mcu_touch_spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\board\mcu_touch_spi.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -742,6 +752,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\driver_pack\lcd\src\st7789.c</FilePath>
             </File>
+            <File>
+              <FileName>ili9341.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\driver_pack\lcd\src\ili9341.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -751,6 +766,36 @@
               <FileName>lcd_ui.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\driver_pack\lcd\src\lcd_ui.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>touch</GroupName>
+          <Files>
+            <File>
+              <FileName>touch_driver.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\driver_pack\input\touch\core\src\touch_driver.c</FilePath>
+            </File>
+            <File>
+              <FileName>cst816.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\driver_pack\input\touch\controller\cst816\src\cst816.c</FilePath>
+            </File>
+            <File>
+              <FileName>xpt2046.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\driver_pack\input\touch\controller\xpt2046\src\xpt2046.c</FilePath>
+            </File>
+            <File>
+              <FileName>cst816_calibration_test.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\tests\target\touch\cst816_calibration_test.c</FilePath>
+            </File>
+            <File>
+              <FileName>ili9341_xpt2046_test.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\tests\target\touch\ili9341_xpt2046_test.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -1,10 +1,3 @@
-/*
- * @Author       : SuperYu 824229900@qq.com
- * @Date         : 2025-07-06 16:43
- * @LastEditors  : Please set LastEditors
- * @LastEditTime : 2025-09-18 23:22
- * @Description  : 
- */
 /**
  * @file: user_conf.h
  * @brief: 用户注册头文件，在此进行注册
@@ -24,9 +17,20 @@
 #include "bsp_uart.h"
 #include "mcu_flash.h"
 #include "mcu_spi.h"
+#include "mcu_touch_spi.h"
 #include "board.h"
 
 /**内部函数*/
 #define get_system_tick get_heart_tick_time
+
+/* Set to 1 to run the CST816 touch calibration test from app/main.c. */
+#ifndef TOUCH_CST816_CALIBRATION_TEST_ENABLE
+#define TOUCH_CST816_CALIBRATION_TEST_ENABLE (0)
+#endif
+
+/* Set to 1 to run the ILI9341 + XPT2046 board test from app/main.c. */
+#ifndef ILI9341_XPT2046_TEST_ENABLE
+#define ILI9341_XPT2046_TEST_ENABLE (1)
+#endif
 
 #endif

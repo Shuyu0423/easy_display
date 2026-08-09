@@ -1,0 +1,65 @@
+{
+  "version": 6,
+  "configurePresets": [
+    {
+      "name": "host",
+      "displayName": "Host tests",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/host",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "C:/MinGW/bin/gcc.exe",
+        "EASY_DISPLAY_BUILD_HOST_TESTS": "ON",
+        "EASY_DISPLAY_BUILD_STM32F4_OBJECTS": "OFF"
+      }
+    },
+    {
+      "name": "stm32f4-objects",
+      "displayName": "STM32F4 object compile",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/stm32f4-objects",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "C:/MinGW/bin/gcc.exe",
+        "EASY_DISPLAY_BUILD_HOST_TESTS": "OFF",
+        "EASY_DISPLAY_BUILD_STM32F4_OBJECTS": "ON"
+      }
+    },
+    {
+      "name": "stm32f4-gcc",
+      "displayName": "STM32F4 GCC firmware",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/stm32f4-gcc",
+      "toolchainFile": "${sourceDir}/cmake/toolchain-arm-none-eabi.cmake",
+      "cacheVariables": {
+        "EASY_DISPLAY_BUILD_HOST_TESTS": "OFF",
+        "EASY_DISPLAY_BUILD_STM32F4_OBJECTS": "OFF",
+        "EASY_DISPLAY_BUILD_STM32F4_FIRMWARE": "ON"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "host",
+      "configurePreset": "host",
+      "configuration": "Debug"
+    },
+    {
+      "name": "stm32f4-objects",
+      "configurePreset": "stm32f4-objects",
+      "configuration": "Debug"
+    },
+    {
+      "name": "stm32f4-gcc",
+      "configurePreset": "stm32f4-gcc"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "host",
+      "configurePreset": "host",
+      "configuration": "Debug",
+      "output": {
+        "outputOnFailure": true
+      }
+    }
+  ]
+}

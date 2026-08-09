@@ -9,6 +9,7 @@
 #define LCD_UI_H__
 
 #include "epd.h"
+#include "ili9341.h"
 #include "st7789.h"
 
 #if 0

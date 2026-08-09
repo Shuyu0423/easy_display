@@ -6,19 +6,57 @@ static TOUCH_DEVICE cst816_dev;
 
 static TOUCH_EVENT cst816_parse_event(uint8_t gesture_id) {
     switch (gesture_id) {
-        case 0x01:
+        case CST816_GESTURE_SLIDE_UP:
             return TOUCH_EVENT_SWIPE_UP;
-        case 0x02:
+        case CST816_GESTURE_SLIDE_DOWN:
             return TOUCH_EVENT_SWIPE_DOWN;
-        case 0x03:
+        case CST816_GESTURE_SLIDE_LEFT:
             return TOUCH_EVENT_SWIPE_LEFT;
-        case 0x04:
+        case CST816_GESTURE_SLIDE_RIGHT:
             return TOUCH_EVENT_SWIPE_RIGHT;
-        case 0x0C:
+        case CST816_GESTURE_SINGLE_CLICK:
+            return TOUCH_EVENT_CLICK;
+        case CST816_GESTURE_DOUBLE_CLICK:
+            return TOUCH_EVENT_DOUBLE_CLICK;
+        case CST816_GESTURE_LONG_PRESS:
             return TOUCH_EVENT_LONG_PRESS;
         default:
             return TOUCH_EVENT_CONTACT;
     }
+}
+
+static TOUCH_EVENT cst816_parse_point_event(uint8_t event) {
+    switch (event) {
+        case CST816_POINT_EVENT_PRESS:
+            return TOUCH_EVENT_PRESS;
+        case CST816_POINT_EVENT_RELEASE:
+            return TOUCH_EVENT_RELEASE;
+        case CST816_POINT_EVENT_CONTACT:
+            return TOUCH_EVENT_CONTACT;
+        default:
+            return TOUCH_EVENT_NONE;
+    }
+}
+
+static uint8_t cst816_is_valid_chip(uint8_t chip_id) {
+    return ((chip_id == CST816_CHIP_ID_1) || (chip_id == CST816_CHIP_ID_2) ||
+            (chip_id == CST816_CHIP_ID_3));
+}
+
+static uint8_t cst816_read_byte(TOUCH_DEVICE *dev, uint8_t reg, uint8_t *data) {
+    if ((dev == NULL) || (dev->bus == NULL) || (dev->bus->read_reg == NULL) || (data == NULL)) {
+        return TOUCH_ERROR_PARAM;
+    }
+
+    return dev->bus->read_reg(dev->address, reg, data, 1U);
+}
+
+static uint8_t cst816_write_byte(TOUCH_DEVICE *dev, uint8_t reg, uint8_t data) {
+    if ((dev == NULL) || (dev->bus == NULL) || (dev->bus->write_reg == NULL)) {
+        return TOUCH_ERROR_PARAM;
+    }
+
+    return dev->bus->write_reg(dev->address, reg, &data, 1U);
 }
 
 /**
@@ -34,11 +72,11 @@ static void cst816_reset(TOUCH_DEVICE *dev) {
 
     dev->bus->set_reset(0);
     if (dev->bus->delay_ms) {
-        dev->bus->delay_ms(5);
+        dev->bus->delay_ms(10);
     }
     dev->bus->set_reset(1);
     if (dev->bus->delay_ms) {
-        dev->bus->delay_ms(50);
+        dev->bus->delay_ms(100);
     }
 }
 
@@ -51,7 +89,7 @@ static void cst816_reset(TOUCH_DEVICE *dev) {
 static uint8_t cst816_init(TOUCH_DEVICE *dev) {
     uint8_t chip_id = 0;
 
-    if ((dev == NULL) || (dev->bus == NULL) || (dev->bus->read_reg == NULL)) {
+    if ((dev == NULL) || (dev->bus == NULL) || (dev->priv == NULL) || (dev->bus->read_reg == NULL)) {
         return TOUCH_ERROR_PARAM;
     }
 
@@ -61,11 +99,32 @@ static uint8_t cst816_init(TOUCH_DEVICE *dev) {
 
     cst816_reset(dev);
 
-    if (dev->bus->read_reg(dev->address, CST816_REG_CHIP_ID, &chip_id, 1U) != TOUCH_OK) {
+    if (cst816_read_byte(dev, CST816_REG_CHIP_ID, &chip_id) != TOUCH_OK) {
         return TOUCH_ERROR_BUS;
+    }
+    if (!cst816_is_valid_chip(chip_id)) {
+        return TOUCH_ERROR;
     }
 
     ((CST816_CONTEXT *)dev->priv)->chip_id = chip_id;
+    ((CST816_CONTEXT *)dev->priv)->last_pressed = 0U;
+
+    if (cst816_read_byte(dev, CST816_REG_PROJECT_ID,
+                         &((CST816_CONTEXT *)dev->priv)->project_id) != TOUCH_OK) {
+        return TOUCH_ERROR_BUS;
+    }
+    if (cst816_read_byte(dev, CST816_REG_FW_VERSION,
+                         &((CST816_CONTEXT *)dev->priv)->fw_version) != TOUCH_OK) {
+        return TOUCH_ERROR_BUS;
+    }
+
+    if (cst816_write_byte(dev, CST816_REG_AUTOSLEEP_TIME, CST816_DEFAULT_AUTOSLEEP_TIME) != TOUCH_OK) {
+        return TOUCH_ERROR_BUS;
+    }
+    if (cst816_write_byte(dev, CST816_REG_IRQ_CTL, CST816_DEFAULT_IRQ_CTL) != TOUCH_OK) {
+        return TOUCH_ERROR_BUS;
+    }
+
     return TOUCH_OK;
 }
 
@@ -78,16 +137,24 @@ static uint8_t cst816_init(TOUCH_DEVICE *dev) {
  */
 static uint8_t cst816_read_point(TOUCH_DEVICE *dev, TOUCH_POINT *point) {
     uint8_t buf[6];
+    uint8_t point_event;
+    CST816_CONTEXT *ctx;
 
-    if ((dev == NULL) || (point == NULL) || (dev->bus == NULL) || (dev->bus->read_reg == NULL)) {
+    if ((dev == NULL) || (point == NULL) || (dev->bus == NULL) || (dev->priv == NULL) ||
+        (dev->bus->read_reg == NULL)) {
         return TOUCH_ERROR_PARAM;
     }
 
+    ctx = (CST816_CONTEXT *)dev->priv;
     point->pressed = 0U;
     point->point_num = 0U;
     point->event = TOUCH_EVENT_NONE;
 
     if (dev->bus->read_int && (dev->bus->read_int() != 0U)) {
+        if (ctx->last_pressed) {
+            ctx->last_pressed = 0U;
+            point->event = TOUCH_EVENT_RELEASE;
+        }
         return TOUCH_OK;
     }
 
@@ -97,13 +164,26 @@ static uint8_t cst816_read_point(TOUCH_DEVICE *dev, TOUCH_POINT *point) {
 
     point->point_num = buf[1] & 0x0FU;
     if (point->point_num == 0U) {
+        if (ctx->last_pressed) {
+            ctx->last_pressed = 0U;
+            point->event = TOUCH_EVENT_RELEASE;
+        }
         return TOUCH_OK;
     }
 
     point->pressed = 1U;
     point->event = cst816_parse_event(buf[0]);
-    point->x = (uint16_t)(((buf[2] & 0x0FU) << 8U) | buf[3]);
-    point->y = (uint16_t)(((buf[4] & 0x0FU) << 8U) | buf[5]);
+    if (buf[0] == CST816_GESTURE_NONE) {
+        point_event = (uint8_t)(buf[2] >> CST816_POINT_EVENT_SHIFT);
+        point->event = cst816_parse_point_event(point_event);
+        if (point->event == TOUCH_EVENT_NONE) {
+            point->event = ctx->last_pressed ? TOUCH_EVENT_CONTACT : TOUCH_EVENT_PRESS;
+        }
+    }
+    ctx->last_pressed = 1U;
+
+    point->x = (uint16_t)(((buf[2] & CST816_POINT_COORD_H_MASK) << 8U) | buf[3]);
+    point->y = (uint16_t)(((buf[4] & CST816_POINT_COORD_H_MASK) << 8U) | buf[5]);
 
     if (point->x >= dev->width) {
         point->x = dev->width - 1U;
@@ -122,12 +202,13 @@ static uint8_t cst816_read_point(TOUCH_DEVICE *dev, TOUCH_POINT *point) {
  * @retval:     TOUCH_STATUS.
  */
 static uint8_t cst816_sleep(TOUCH_DEVICE *dev) {
-    uint8_t sleep_cmd = 0x03U;
+    uint8_t sleep_cmd = CST816_SLEEP_CMD;
 
-    if ((dev == NULL) || (dev->bus == NULL) || (dev->bus->write_reg == NULL)) {
+    if ((dev == NULL) || (dev->bus == NULL) || (dev->priv == NULL) || (dev->bus->write_reg == NULL)) {
         return TOUCH_ERROR_PARAM;
     }
 
+    ((CST816_CONTEXT *)dev->priv)->last_pressed = 0U;
     return dev->bus->write_reg(dev->address, CST816_REG_SLEEP_MODE, &sleep_cmd, 1U);
 }
 
@@ -138,10 +219,11 @@ static uint8_t cst816_sleep(TOUCH_DEVICE *dev) {
  * @retval:     TOUCH_STATUS.
  */
 static uint8_t cst816_wakeup(TOUCH_DEVICE *dev) {
-    if (dev == NULL) {
+    if ((dev == NULL) || (dev->priv == NULL)) {
         return TOUCH_ERROR_PARAM;
     }
 
+    ((CST816_CONTEXT *)dev->priv)->last_pressed = 0U;
     cst816_reset(dev);
     return TOUCH_OK;
 }
@@ -186,4 +268,14 @@ uint8_t cst816_register(TOUCH_DEVICE *dev, TOUCH_BUS_OPS *bus, uint16_t width, u
  */
 const TOUCH_CONTROLLER *cst816_get_controller(void) {
     return &cst816_controller;
+}
+
+/**
+ * @function:   cst816_get_context
+ * @breif:      Get CST816 runtime context.
+ * @param:      NULL
+ * @retval:     CST816_CONTEXT pointer.
+ */
+CST816_CONTEXT *cst816_get_context(void) {
+    return &cst816_ctx;
 }

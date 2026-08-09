@@ -34,9 +34,11 @@ static uint16_t mcu_flash_get_sector(uint32_t addr) {
  * @brief:      读取地址内容
  * @retval:     具体的值
  */ 
+#if 0
 static uint32_t mcu_flash_read_data(u32 faddr) {
 	return *(vu32*)faddr; 
 }
+#endif
 
 
 /**

@@ -75,6 +75,8 @@ int main(void)
     failed |= expect_true(touch_init() == TOUCH_ERROR_NOT_READY, "touch_init rejects missing registration");
 
     mock_regs[CST816_REG_CHIP_ID] = 0xB5U;
+    mock_regs[CST816_REG_PROJECT_ID] = 0x16U;
+    mock_regs[CST816_REG_FW_VERSION] = 0x23U;
     failed |= expect_true(cst816_register(NULL, &bus, 240U, 280U) == TOUCH_OK, "cst816_register succeeds");
     failed |= expect_true(touch_init() == TOUCH_OK, "touch_init succeeds after registration");
     failed |= expect_true(mock_bus_init_count == 1U, "bus init called once");
@@ -85,6 +87,8 @@ int main(void)
     ctx = (CST816_CONTEXT *)dev->priv;
     failed |= expect_true(dev != NULL, "registered device is available");
     failed |= expect_true(ctx->chip_id == 0xB5U, "chip id stored in driver context");
+    failed |= expect_true(ctx->project_id == 0x16U, "project id stored in driver context");
+    failed |= expect_true(ctx->fw_version == 0x23U, "firmware version stored in driver context");
 
     mock_int_level = 1U;
     failed |= expect_true(touch_read_point(&point) == TOUCH_OK, "read point returns OK when INT inactive");
@@ -92,7 +96,7 @@ int main(void)
     failed |= expect_true(point.event == TOUCH_EVENT_NONE, "inactive INT reports no event");
 
     mock_int_level = 0U;
-    mock_regs[CST816_REG_GESTURE_ID] = 0x03U;
+    mock_regs[CST816_REG_GESTURE_ID] = CST816_GESTURE_NONE;
     mock_regs[CST816_REG_FINGER_NUM] = 0x01U;
     mock_regs[CST816_REG_XPOS_H] = 0x01U;
     mock_regs[CST816_REG_XPOS_L] = 0x2CU;
@@ -103,9 +107,34 @@ int main(void)
     failed |= expect_true(touch_read_point(&point) == TOUCH_OK, "read point succeeds when INT active");
     failed |= expect_true(point.pressed == 1U, "active point reports pressed");
     failed |= expect_true(point.point_num == 1U, "finger count parsed");
-    failed |= expect_true(point.event == TOUCH_EVENT_SWIPE_LEFT, "gesture parsed");
+    failed |= expect_true(point.event == TOUCH_EVENT_PRESS, "first contact reports press");
     failed |= expect_true(point.x == 239U, "x coordinate clamps to panel width");
     failed |= expect_true(point.y == 100U, "y coordinate parsed");
+
+    mock_regs[CST816_REG_XPOS_H] = (uint8_t)((CST816_POINT_EVENT_CONTACT << CST816_POINT_EVENT_SHIFT) | 0x01U);
+    memset(&point, 0, sizeof(point));
+    failed |= expect_true(touch_read_point(&point) == TOUCH_OK, "second active point succeeds");
+    failed |= expect_true(point.event == TOUCH_EVENT_CONTACT, "continuous contact reports contact");
+
+    mock_regs[CST816_REG_GESTURE_ID] = CST816_GESTURE_SLIDE_LEFT;
+    memset(&point, 0, sizeof(point));
+    failed |= expect_true(touch_read_point(&point) == TOUCH_OK, "gesture point succeeds");
+    failed |= expect_true(point.event == TOUCH_EVENT_SWIPE_LEFT, "swipe gesture parsed");
+
+    mock_regs[CST816_REG_GESTURE_ID] = CST816_GESTURE_SINGLE_CLICK;
+    memset(&point, 0, sizeof(point));
+    failed |= expect_true(touch_read_point(&point) == TOUCH_OK, "single click point succeeds");
+    failed |= expect_true(point.event == TOUCH_EVENT_CLICK, "single click gesture parsed");
+
+    mock_regs[CST816_REG_GESTURE_ID] = CST816_GESTURE_DOUBLE_CLICK;
+    memset(&point, 0, sizeof(point));
+    failed |= expect_true(touch_read_point(&point) == TOUCH_OK, "double click point succeeds");
+    failed |= expect_true(point.event == TOUCH_EVENT_DOUBLE_CLICK, "double click gesture parsed");
+
+    mock_int_level = 1U;
+    memset(&point, 0, sizeof(point));
+    failed |= expect_true(touch_read_point(&point) == TOUCH_OK, "inactive INT after press succeeds");
+    failed |= expect_true(point.event == TOUCH_EVENT_RELEASE, "inactive INT after press reports release");
 
     failed |= expect_true(touch_sleep() == TOUCH_OK, "sleep command succeeds");
     failed |= expect_true(mock_last_write_reg == CST816_REG_SLEEP_MODE, "sleep register selected");

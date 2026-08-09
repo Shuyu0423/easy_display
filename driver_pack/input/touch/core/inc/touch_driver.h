@@ -16,6 +16,8 @@ typedef enum {
     TOUCH_EVENT_PRESS,
     TOUCH_EVENT_RELEASE,
     TOUCH_EVENT_CONTACT,
+    TOUCH_EVENT_CLICK,
+    TOUCH_EVENT_DOUBLE_CLICK,
     TOUCH_EVENT_LONG_PRESS,
     TOUCH_EVENT_SWIPE_UP,
     TOUCH_EVENT_SWIPE_DOWN,
@@ -35,6 +37,7 @@ typedef struct {
     uint8_t (*init)(void);
     uint8_t (*read_reg)(uint8_t dev_addr, uint8_t reg, uint8_t *data, uint16_t len);
     uint8_t (*write_reg)(uint8_t dev_addr, uint8_t reg, const uint8_t *data, uint16_t len);
+    uint8_t (*transfer)(const uint8_t *tx_data, uint8_t *rx_data, uint16_t len);
     void (*set_reset)(uint8_t level);
     uint8_t (*read_int)(void);
     void (*delay_ms)(uint32_t ms);

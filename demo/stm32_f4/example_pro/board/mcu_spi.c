@@ -37,6 +37,7 @@ void spi_gpio_init(void) {
     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
     GPIO_Init(SPI_RES_GPIO_PORT, &GPIO_InitStructure);
+    SPI_RES_Set();
 
     GPIO_InitStructure.GPIO_Pin = SPI_DC_GPIO_PIN;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
@@ -50,6 +51,7 @@ void spi_gpio_init(void) {
     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
     GPIO_Init(SPI_CS_GPIO_PORT, &GPIO_InitStructure);
+    SPI_CS_Set();
 
     GPIO_InitStructure.GPIO_Pin = SPI_BUSY_GPIO_PIN;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
@@ -61,6 +63,7 @@ void spi_gpio_init(void) {
     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
     GPIO_Init(SPI_BL_GPIO_PORT, &GPIO_InitStructure);
+    SPI_BL_Set();
 }
 
 /**

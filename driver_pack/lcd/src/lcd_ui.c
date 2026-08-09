@@ -9,6 +9,7 @@ static PAINT paint;
 static uint8_t img_bw[LCD_WIDTH * LCD_HEIGHT];
 #endif
 
+#if USE_EPD
 /**
  * @function:      ui_new_img
  * @breif:         Create a monochrome canvas for EPD drawing.
@@ -41,6 +42,7 @@ static void ui_new_img(uint8_t *image, uint16_t width, uint16_t height, uint16_t
     ui_buf_clear(WHITE);
 #endif
 }
+#endif
 
 /**
  * @function:       ui_set_pixel
@@ -104,7 +106,11 @@ void ui_init(void) {
     ssd1680_driver_init_callback(&ui_driver);
 #endif
 #if USE_LCD
+#if USE_ILI9341
+    ili9341_driver_init_callback(&ui_driver);
+#elif USE_ST7789
     st7789_driver_init_callback(&ui_driver);
+#endif
 #endif
 
     if (ui_driver.ui_init) {

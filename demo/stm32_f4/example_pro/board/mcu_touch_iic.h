@@ -20,6 +20,9 @@
 #define TOUCH_INT_GPIO_PIN GPIO_Pin_9
 #define TOUCH_INT_GPIO_CLK RCC_AHB1Periph_GPIOB
 
+#define TOUCH_IIC_DELAY_US (10U)
+#define TOUCH_IIC_RETRY_COUNT (3U)
+
 TOUCH_BUS_OPS *mcu_touch_iic_get_ops(void);
 uint8_t mcu_touch_iic_init(void);
 uint8_t mcu_touch_iic_read_reg(uint8_t dev_addr, uint8_t reg, uint8_t *data, uint16_t len);

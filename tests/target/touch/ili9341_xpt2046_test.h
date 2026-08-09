@@ -1,0 +1,16 @@
+#ifndef ILI9341_XPT2046_TEST_H__
+#define ILI9341_XPT2046_TEST_H__
+
+#ifndef ILI9341_XPT2046_TEST_ENABLE
+#define ILI9341_XPT2046_TEST_ENABLE (0)
+#endif
+
+#ifndef ILI9341_XPT2046_TEST_POLL_MS
+#define ILI9341_XPT2046_TEST_POLL_MS (50U)
+#endif
+
+#if ILI9341_XPT2046_TEST_ENABLE
+void ili9341_xpt2046_test(void);
+#endif
+
+#endif

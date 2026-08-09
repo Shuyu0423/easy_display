@@ -7,8 +7,6 @@
 #ifndef COMMAND_H__
 #define COMMAND_H__
 
-#include "sc_log.h"
-
 typedef struct __attribute__((aligned(4))) {
     const char* command_name;           /**命令名称*/
     void(*command_fn)(void);            /**命令对应的函数操作*/

@@ -9,6 +9,7 @@
 
 
 void* c_memcpy(void* dest, const void* src, size_t num);
+void* c_memset(void* dest, int value, size_t num);
 size_t c_strlen(char *arr);
 
 /**string search */

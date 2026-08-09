@@ -12,6 +12,8 @@
 
 #define USE_EPD (0)
 #define USE_LCD (1)
+#define USE_ILI9341 (1)
+#define USE_ST7789 (0)
 
 #if AGREEMENT_ENABLE
 
@@ -23,10 +25,12 @@
 
 #if (AGREEMENT_TARGETS & AGREEMENT_SPI)
 
+#define LCD_GET_TICK_FUNC get_heart_tick_time
+
 #define DELAY_MS(tick) \
     do { \
-        uint32_t start = get_system_tick(); \
-        while ((uint32_t)(get_system_tick() - start) < (tick)); \
+        uint32_t start = LCD_GET_TICK_FUNC(); \
+        while ((uint32_t)(LCD_GET_TICK_FUNC() - start) < (tick)); \
     } while (0)
 
 #define SET_SCREEN_ORIENTATION (0)
@@ -42,15 +46,15 @@
 #if USE_EPD
 #define LCD_WIDTH (152)
 #define LCD_HEIGHT (152)
+#elif USE_ILI9341
+#define LCD_WIDTH (240)
+#define LCD_HEIGHT (320)
 #else
 #define LCD_WIDTH (240)
 #define LCD_HEIGHT (284)
 #endif
 
 #define AGREEMENT_SPI_ENABLE
-
-#define LCD_GET_TICK_FUNC get_heart_tick_time
-#define get_system_tick LCD_GET_TICK_FUNC
 
 #define SPI_INIT spi_gpio_init
 #define SPI_SWAP_BYTE spi_transbyte

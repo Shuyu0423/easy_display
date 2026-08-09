@@ -6,6 +6,8 @@
  */
 
 #include "command.h"
+#include "sc_log.h"
+#include <string.h>
 
 /***************************command funciton***********************/
 REGISTER_COMMAND_FUNCTION(version) {

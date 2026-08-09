@@ -20,6 +20,25 @@ void* c_memcpy(void* dest, const void* src, size_t num) {
     return ret;
 }
 
+/**
+ * @brief  Fill a memory block with a byte value.
+ * @param  dest  Destination memory address.
+ * @param  value Value to write, converted to unsigned char.
+ * @param  num   Number of bytes to fill.
+ * @retval Destination memory address.
+ */
+void* c_memset(void* dest, int value, size_t num) {
+    unsigned char* dest_ptr = (unsigned char*)dest;
+    unsigned char fill_value = (unsigned char)value;
+    void* ret = dest;
+
+    while (num--) {
+        *dest_ptr++ = fill_value;
+    }
+
+    return ret;
+}
+
 
 size_t c_strlen(char *arr)
 {
